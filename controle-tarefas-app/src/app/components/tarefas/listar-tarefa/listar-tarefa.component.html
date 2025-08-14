@@ -1,0 +1,198 @@
+<section class="">
+  <div class="filtro-tarefas">
+    <h1 class="titulo-tabela">Filtros</h1>
+    <div class="filtros">
+      <mat-form-field>
+        <mat-label>Status</mat-label>
+        <mat-select [formControl]="statusFiltrados" multiple>
+          @for (status of listaStatus; track status.id) {
+          <mat-option [value]="status.id">{{status.descricao}}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+      @if (statusFiltrados.hasError('required')) {
+      <mat-error>Selecione pelo menos um status</mat-error>
+      }
+      <button mat-fab color="primary" matTooltip="Filtrar" (click)="filtrarPorStatus()" [disabled]="false">
+        <mat-icon>search</mat-icon>
+      </button>
+
+      @if(!adicionandoTarefa) {
+      <button mat-fab color="basic" matTooltip="Adicionar Tarefa" (click)="criarTarefa()">
+        <mat-icon>add</mat-icon>
+      </button>
+      }
+      @else {
+      <button mat-fab matTooltip="Cancelar" color="accent" (click)="cancelarCriacao()">
+        <mat-icon>close</mat-icon>
+      </button>
+      }
+    </div>
+  </div>
+
+  <div class="tarefas-container">
+    @for (tarefa of tarefas; track tarefa.id) {
+    <mat-card class="card-tarefa">
+      <div class="destaque-tarefa"></div>
+      <mat-card-header>
+        <div style="width: 100%;">
+          <div class="card-topo">
+            <em class="tarefa-id">#{{ tarefa.id.toString().padStart(5, '0') }}</em>
+            @if(tarefaEmEdicao == tarefa.id) {
+            <mat-select [disabled]="tarefaEmEdicao != tarefa.id" [(ngModel)]="tarefa.status" style="width: 50%;">
+              @for (status of listaStatus; track status.id) {
+              <mat-option [value]="status.id" [disabled]="!status.permiteEscolher">{{ status.descricao }}</mat-option>
+              }
+            </mat-select>
+            }
+            @else {
+            <mat-chip class="status-tarefa-{{tarefa.status}}" cdkDrag><strong>{{tarefa.statusStr}}</strong></mat-chip>
+            }
+            @if(tarefaEmEdicao == 0 || tarefaEmEdicao == tarefa.id) {
+            <div class="card-actions">
+              @if(tarefa.status == 3 || tarefa.status == 5) {
+              <button mat-mini-fab color="primary" matTooltip="Reabrir Tarefa" (click)="reabrirTarefa(tarefa.id)">
+                <mat-icon>undo</mat-icon>
+              </button>
+              }
+              @else if(tarefaEmEdicao == 0) {
+              <button mat-mini-fab color="primary" matTooltip="Editar Tarefa" (click)="editarTarefa(tarefa.id)">
+                <mat-icon>edit</mat-icon>
+              </button>
+              }
+              @else {
+              <button mat-mini-fab color="primary" matTooltip="Salvar Edição" (click)="salvarEdicaoTarefa(tarefa)"
+                [disabled]="tituloValidator.hasError('minLength') || tituloValidator.hasError('required')">
+                <mat-icon>check</mat-icon>
+              </button>
+
+              <button mat-mini-fab matTooltip="Cancelar Edição" color="accent" (click)="cancelarEdicao()">
+                <mat-icon>close</mat-icon>
+              </button>
+
+              <button mat-mini-fab matTooltip="Excluir Tarefa" color="warn" (click)="abrirConfirmacao()">
+                <mat-icon>delete</mat-icon>
+              </button>
+              }
+            </div>
+            }
+          </div>
+          <mat-card-title>
+            @if(tarefaEmEdicao == tarefa.id) {
+            <mat-form-field class="full-size">
+              <mat-label>Título</mat-label>
+              <input matInput placeholder="Minha Tarefa" [formControl]="tituloValidator" maxlength="100"
+                [(ngModel)]="tarefa.titulo">
+              <mat-hint align="end">{{ tarefa.titulo.length }} / 100</mat-hint>
+              @if (tituloValidator.hasError('minlength') || tituloValidator.hasError('required')) {
+              <mat-error>O título deve conter ao menos 2 caracteres</mat-error>
+              }
+            </mat-form-field>
+            }
+            @else {
+            {{ tarefa.titulo }}
+            }
+          </mat-card-title>
+        </div>
+        <mat-divider></mat-divider>
+      </mat-card-header>
+      <mat-card-content>
+        @if(tarefaEmEdicao == tarefa.id) {
+        <mat-form-field class="full-size">
+          <mat-label>Descrição</mat-label>
+          <textarea matInput placeholder="Desenvolver a tarefa..." [disabled]="tarefaEmEdicao != tarefa.id"
+            [(ngModel)]="tarefa.descricao" [formControl]="descricaoValidator"></textarea>
+        </mat-form-field>
+        @if (descricaoValidator.hasError('minlength') || descricaoValidator.hasError('required')) {
+        <mat-error>A descrição deve conter ao menos 5 caracteres</mat-error>
+        }
+        }
+        @else {
+        <mat-form-field class="full-size">
+          <mat-label>Descrição</mat-label>
+          <textarea matInput disabled [(ngModel)]="tarefa.descricao"></textarea>
+        </mat-form-field>
+        }
+        <p><strong>Criado em:</strong> {{tarefa.dataCriacao | date:'dd/MM/yyyy HH:mm:ss'}}</p>
+        @if(tarefa.dataAlteracao != null) {
+        <p><strong>Última Alteração:</strong> {{tarefa.dataAlteracao | date:'dd/MM/yyyy HH:mm:ss'}}</p>
+        }
+      </mat-card-content>
+    </mat-card>
+    }
+
+    @if(adicionandoTarefa) {
+    <ng-container>
+      <div class="loading-overlay">
+        <mat-card class="card-tarefa">
+          <div class="destaque-tarefa"></div>
+          <mat-card-header>
+            <div class="full-size">
+              <div class="card-topo">
+                <mat-chip class="status-tarefa-0" cdkDrag><strong>Adicionando</strong></mat-chip>
+                <div class="card-actions">
+                  <button mat-mini-fab color="primary" matTooltip="Criar Tarefa" (click)="salvarNovaTarefa()"
+                    [disabled]="tituloNovaTarefa.hasError('minLength') || tituloNovaTarefa.hasError('required')">
+                    <mat-icon>check</mat-icon>
+                  </button>
+
+                  <button mat-mini-fab matTooltip="Cancelar" color="accent" (click)="cancelarCriacao()">
+                    <mat-icon>close</mat-icon>
+                  </button>
+                </div>
+              </div>
+              <mat-card-title>
+                <mat-form-field class="full-size">
+                  <mat-label>Título</mat-label>
+                  <input matInput placeholder="Minha Tarefa" [formControl]="tituloNovaTarefa" maxlength="100"
+                    [(ngModel)]="novaTarefa.titulo">
+                  <mat-hint align="end">{{ novaTarefa.titulo.length }} / 100</mat-hint>
+                  @if (tituloNovaTarefa.hasError('minlength') || tituloNovaTarefa.hasError('required')) {
+                  <mat-error>O título deve conter ao menos 2 caracteres</mat-error>
+                  }
+                </mat-form-field>
+              </mat-card-title>
+            </div>
+            <mat-divider></mat-divider>
+          </mat-card-header>
+          <mat-card-content>
+            <mat-form-field class="full-size">
+              <mat-label>Descrição</mat-label>
+              <textarea matInput placeholder="Desenvolver a tarefa..." [(ngModel)]="novaTarefa.descricao"
+                [formControl]="descricaoNovaTarefa"></textarea>
+            </mat-form-field>
+            @if (descricaoNovaTarefa.hasError('minlength') || descricaoNovaTarefa.hasError('required')) {
+            <mat-error>A descrição deve conter ao menos 5 caracteres</mat-error>
+            }
+          </mat-card-content>
+        </mat-card>
+      </div>
+    </ng-container>
+    }
+    @else {
+    <div class="example-button-container">
+      <button mat-fab color="primary" matTooltip="Adicionar Tarefa" (click)="criarTarefa()">
+        <mat-icon>add</mat-icon>
+      </button>
+    </div>
+    }
+  </div>
+</section>
+
+
+<ng-template #confirmacaoTemplate>
+  <h2 mat-dialog-title>Confirmação</h2>
+  <mat-dialog-content>Tem certeza que deseja excluir esta tarefa?</mat-dialog-content>
+  <mat-dialog-actions align="end">
+    <button mat-button mat-dialog-close>Cancelar</button>
+    <button mat-raised-button mat-dialog-close color="primary" (click)="exclusaoConfirmada()">Excluir</button>
+  </mat-dialog-actions>
+</ng-template>
+
+@if(isCarregando) {
+<ng-container>
+  <div class="loading-overlay">
+    <mat-progress-spinner mode="indeterminate" color="primary"></mat-progress-spinner>
+  </div>
+</ng-container>
+}

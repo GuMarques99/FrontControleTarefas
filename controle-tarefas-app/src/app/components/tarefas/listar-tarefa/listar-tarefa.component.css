@@ -1,0 +1,128 @@
+.tela-container {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f8f9fa;
+    min-height: 100dvh;
+}
+
+.tarefas-container {
+    display: flex;
+    flex-direction: row;
+    gap: 15px;
+    padding: 2rem 5rem;
+    flex-wrap: wrap;
+    justify-content: center; /* Centraliza os cards */
+}
+
+.card-tarefa {
+    flex: 1 1 400px;      
+    min-width: 400px;     
+    max-width: 420px;     /* Limite máximo menor */
+    border: 2px solid;
+    border-radius: 10px;
+    border-color: linear-gradient(131deg, #3b0353 0%, #380072 50%, #620a8c 100%);
+    color: #3b0353;
+    box-sizing: border-box;
+}
+
+.card-topo {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    margin-top: 10px;
+}
+
+.card-actions {
+    display: flex;
+    justify-content: end;
+    gap: 5px;
+    width: 50%;
+    margin-bottom: 10px
+}
+
+.tarefa-id {
+    color: gray;
+    position: absolute;
+    top: 0;
+    left: 5px;
+}
+
+.example-card-footer {
+  padding: 16px;
+}
+
+.full-size {
+    width: 100%;
+}
+
+.example-button-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 200px;;
+}
+
+.status-tarefa-0, .status-tarefa-4 {
+    background-color: #3b0353 !important;
+}
+
+.status-tarefa-0 strong, .status-tarefa-4 strong {
+    color: white !important;
+}
+
+.status-tarefa-1 {
+    background-color: #1a42c7 !important;
+}
+
+.status-tarefa-1 strong {
+    color: white !important;
+}
+
+.status-tarefa-2 {
+    background-color: #ffe600 !important;
+}
+
+.status-tarefa-3 {
+    background-color: #00b460 !important;
+}
+
+.status-tarefa-3 strong {
+    color: white !important;
+}
+
+.status-tarefa-5 {
+    background-color: #be0101 !important;
+}
+
+.status-tarefa-5 strong {
+    color: white !important;
+}
+
+.titulo-tabela {
+    text-align: center;
+    color: #380072;
+    font-weight: 900;
+    margin-top: 1em;
+}
+
+.filtros {
+    display: flex;
+    width: 100%;
+    justify-content: center;
+    gap: 20px;
+}
+
+.loading-overlay {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(255,255,255,0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+}
+
+@media (max-width: 768px) {
+    .example-button-container {
+        width: 400px;
+    }
+}

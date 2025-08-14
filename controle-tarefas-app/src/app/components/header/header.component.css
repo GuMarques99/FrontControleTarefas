@@ -1,0 +1,38 @@
+/* header-site.component.css */
+.header-site {
+  width: 100%;
+  background: linear-gradient(90deg, #3b0353 0%, #380072 50%, #620a8c 100%);
+  padding: 1.5rem 0;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.07);
+}
+
+.header-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center; /* Centraliza o conteúdo */
+  position: relative;
+}
+
+.logo-header {
+  height: 48px;
+  width: auto;
+  position: absolute;
+  left: 0;
+}
+
+.titulo-header {
+  color: #fff;
+  font-size: 2rem;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-align: center;
+  flex: 1;
+}
+
+@media (max-width: 768px) {
+    .logo-header {
+      display: none;
+    }
+}
